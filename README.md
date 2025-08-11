@@ -2,6 +2,10 @@
 
 A comprehensive web-based information system for analyzing genetic data, identifying health risks, and discovering beneficial traits based on gene expression patterns and ancestry information.
 
+## 🌐 Live Application
+**Production URL**: [http://88.200.63.148:3122](http://88.200.63.148:3122)  
+**Backend API**: [http://88.200.63.148:5120/api](http://88.200.63.148:5120/api)
+
 ## 🧬 Features Implemented
 
 This prototype demonstrates 5 core functionalities as required:
@@ -166,11 +170,13 @@ npm run build
 
 ## 🔧 Development Notes
 
-### Mock Data
-The system uses realistic mock genetic data for demonstration purposes:
-- Simulated chromosome positions and variants
-- Ancestry-based risk calculations
-- Common genetic markers (BRCA1, BRCA2, APOE, CFTR, ACTN3, MCM6)
+### Mock Data & Patient Profiles
+The system uses realistic mock genetic data with distinct patient-specific analysis results:
+- **Patient 1**: High-risk profile (68.5 score) - BRCA2, TP53 variants
+- **Patient 2**: Mixed-risk profile (42.3 score) - APOE, cardiovascular variants  
+- **Patient 3**: Low-risk profile (18.7 score) - Pharmacogenetic benefits
+- **Patient 4**: Moderate-risk profile (35.6 score) - BRCA1, immune variants
+- Common genetic markers analyzed: BRCA1, BRCA2, APOE, CFTR, ACTN3, MCM6, TP53, PALB2, LDLR, PCSK9, CYP2D6, VKORC1, HLA-B, G6PD
 
 ### Future Enhancements
 - File upload for real genetic data (23andMe, AncestryDNA format)
