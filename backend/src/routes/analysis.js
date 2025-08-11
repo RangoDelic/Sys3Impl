@@ -4,58 +4,172 @@ const { authMiddleware, roleMiddleware } = require('../middleware/auth');
 
 const router = express.Router();
 
-// Mock gene analysis function
-const performGeneAnalysis = (geneticData, ancestryData, medicalHistory) => {
-    // This is a simplified mock analysis
-    const mockResults = {
-        analyzedGenes: ['BRCA1', 'BRCA2', 'APOE', 'CFTR', 'ACTN3', 'MCM6'],
-        riskVariants: [],
-        beneficialTraits: [],
-        overallRiskScore: Math.random() * 100,
-        analysisDate: new Date().toISOString()
+// Mock gene analysis function with patient-specific results
+const performGeneAnalysis = (geneticData, ancestryData, medicalHistory, patientId) => {
+    // Base analyzed genes for all patients
+    const baseGenes = ['BRCA1', 'BRCA2', 'APOE', 'CFTR', 'ACTN3', 'MCM6'];
+    
+    // Create distinct results based on patient ID
+    const patientProfiles = {
+        1: {
+            analyzedGenes: [...baseGenes, 'TP53', 'PALB2'],
+            riskVariants: [
+                {
+                    gene: 'BRCA2',
+                    variant: '6174delT',
+                    condition: 'Breast/Ovarian Cancer',
+                    riskLevel: 'high',
+                    riskPercentage: 45.2
+                },
+                {
+                    gene: 'TP53',
+                    variant: 'R175H',
+                    condition: 'Li-Fraumeni Syndrome',
+                    riskLevel: 'moderate',
+                    riskPercentage: 22.7
+                }
+            ],
+            beneficialTraits: [
+                {
+                    gene: 'ACTN3',
+                    variant: 'R/R',
+                    trait: 'Enhanced Fast-Twitch Muscle Performance',
+                    category: 'Athletic Performance',
+                    confidence: 'high'
+                }
+            ],
+            overallRiskScore: 68.5
+        },
+        2: {
+            analyzedGenes: [...baseGenes, 'LDLR', 'PCSK9'],
+            riskVariants: [
+                {
+                    gene: 'APOE',
+                    variant: 'e4/e4',
+                    condition: 'Alzheimer\'s Disease',
+                    riskLevel: 'high',
+                    riskPercentage: 55.8
+                },
+                {
+                    gene: 'LDLR',
+                    variant: 'G571E',
+                    condition: 'Familial Hypercholesterolemia',
+                    riskLevel: 'moderate',
+                    riskPercentage: 31.4
+                }
+            ],
+            beneficialTraits: [
+                {
+                    gene: 'MCM6',
+                    variant: 'C/T',
+                    trait: 'Lactose Tolerance',
+                    category: 'Dietary',
+                    confidence: 'high'
+                },
+                {
+                    gene: 'PCSK9',
+                    variant: 'R46L',
+                    trait: 'Low LDL Cholesterol',
+                    category: 'Cardiovascular Health',
+                    confidence: 'moderate'
+                }
+            ],
+            overallRiskScore: 42.3
+        },
+        3: {
+            analyzedGenes: [...baseGenes, 'CYP2D6', 'VKORC1'],
+            riskVariants: [
+                {
+                    gene: 'CFTR',
+                    variant: 'F508del',
+                    condition: 'Cystic Fibrosis Carrier',
+                    riskLevel: 'low',
+                    riskPercentage: 8.1
+                }
+            ],
+            beneficialTraits: [
+                {
+                    gene: 'CYP2D6',
+                    variant: '*1/*1',
+                    trait: 'Normal Drug Metabolism',
+                    category: 'Pharmacogenetics',
+                    confidence: 'high'
+                },
+                {
+                    gene: 'VKORC1',
+                    variant: 'GG',
+                    trait: 'Normal Warfarin Sensitivity',
+                    category: 'Drug Response',
+                    confidence: 'high'
+                },
+                {
+                    gene: 'MCM6',
+                    variant: 'C/T',
+                    trait: 'Lactose Tolerance',
+                    category: 'Dietary',
+                    confidence: 'high'
+                }
+            ],
+            overallRiskScore: 18.7
+        },
+        4: {
+            analyzedGenes: [...baseGenes, 'HLA-B', 'G6PD'],
+            riskVariants: [
+                {
+                    gene: 'BRCA1',
+                    variant: '185delAG',
+                    condition: 'Hereditary Breast Cancer',
+                    riskLevel: 'moderate',
+                    riskPercentage: 28.9
+                },
+                {
+                    gene: 'G6PD',
+                    variant: 'A-',
+                    condition: 'G6PD Deficiency',
+                    riskLevel: 'low',
+                    riskPercentage: 12.3
+                }
+            ],
+            beneficialTraits: [
+                {
+                    gene: 'HLA-B',
+                    variant: 'B*57:01',
+                    trait: 'HIV Elite Controller',
+                    category: 'Immune Response',
+                    confidence: 'moderate'
+                },
+                {
+                    gene: 'ACTN3',
+                    variant: 'R/X',
+                    trait: 'Mixed Athletic Performance',
+                    category: 'Physical Performance',
+                    confidence: 'moderate'
+                }
+            ],
+            overallRiskScore: 35.6
+        }
     };
 
-    // Mock risk variants based on ancestry
-    if (ancestryData.european > 0.5) {
-        mockResults.riskVariants.push({
-            gene: 'BRCA1',
-            variant: '5382insC',
-            condition: 'Breast Cancer',
-            riskLevel: 'moderate',
-            riskPercentage: 15 + Math.random() * 20
-        });
-    }
+    // Get the profile for this patient, or use a default if not found
+    const profile = patientProfiles[patientId] || {
+        analyzedGenes: baseGenes,
+        riskVariants: [],
+        beneficialTraits: [
+            {
+                gene: 'ACTN3',
+                variant: 'R/R',
+                trait: 'Enhanced Athletic Performance',
+                category: 'Physical Performance',
+                confidence: 'high'
+            }
+        ],
+        overallRiskScore: 25.0 + (patientId * 5)
+    };
 
-    if (ancestryData.asian > 0.3) {
-        mockResults.riskVariants.push({
-            gene: 'APOE',
-            variant: 'e3/e4',
-            condition: 'Alzheimer\'s Disease',
-            riskLevel: 'low',
-            riskPercentage: 5 + Math.random() * 15
-        });
-    }
-
-    // Mock beneficial traits
-    mockResults.beneficialTraits.push({
-        gene: 'ACTN3',
-        variant: 'R/R',
-        trait: 'Enhanced Athletic Performance',
-        category: 'Physical Performance',
-        confidence: 'high'
-    });
-
-    if (ancestryData.european > 0.7) {
-        mockResults.beneficialTraits.push({
-            gene: 'MCM6',
-            variant: 'C/T',
-            trait: 'Lactose Tolerance',
-            category: 'Dietary',
-            confidence: 'high'
-        });
-    }
-
-    return mockResults;
+    return {
+        ...profile,
+        analysisDate: new Date().toISOString()
+    };
 };
 
 // Perform gene expression analysis
@@ -101,7 +215,7 @@ router.post('/analyze', authMiddleware, roleMiddleware([1, 2]), async (req, res)
         const medicalHistory = patients[0]?.medical_history || '';
 
         // Perform mock analysis
-        const analysisResults = performGeneAnalysis(geneticDataRaw, ancestryData, medicalHistory);
+        const analysisResults = performGeneAnalysis(geneticDataRaw, ancestryData, medicalHistory, patientId);
 
         // Store analysis results
         await db.execute(

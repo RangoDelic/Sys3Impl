@@ -1,8 +1,9 @@
 -- GeneDetective Database Schema
 -- Based on the relational model from seminar report
 
-CREATE DATABASE IF NOT EXISTS gene_detective;
-USE gene_detective;
+-- Note: Use the provided university database SISIII2024_89201217
+-- This schema should be run in that database
+USE SISIII2024_89201217;
 
 -- Users table (base table for all user types)
 CREATE TABLE users (
